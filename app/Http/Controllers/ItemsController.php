@@ -14,7 +14,8 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        $items = Items::all();
+        // $items = Items::all();
+        $items = Items::orderBy('id', 'asc')->paginate(5);
         return view('items.index')->with('items', $items);
     }
 
@@ -25,7 +26,7 @@ class ItemsController extends Controller
      */
     public function create()
     {
-        //
+        return view('items.create');
     }
 
     /**
@@ -36,7 +37,20 @@ class ItemsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this -> validate($request, [
+            'name' => 'required',
+            'price' => 'required',
+            'stocks' => 'required'
+        ]);
+
+        // Create New Item
+        $item = new Items;
+        $item->name = $request->input('name');
+        $item->price = $request->input('price');
+        $item->stocks = $request->input('stocks');
+        $item->save();
+
+        return redirect('/items')->with('success','New Item has been inserted!');
     }
 
     /**
@@ -47,7 +61,8 @@ class ItemsController extends Controller
      */
     public function show($id)
     {
-        //
+        // $item = Items::find($id);
+        // return view('items.show')->with('item', $item); // single item that selected
     }
 
     /**
@@ -58,7 +73,8 @@ class ItemsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $item = Items::find($id);
+        return view('items.edit')->with('item', $item); // single item that selected
     }
 
     /**
@@ -70,7 +86,20 @@ class ItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this -> validate($request, [
+            'name' => 'required',
+            'price' => 'required',
+            'stocks' => 'required'
+        ]);
+
+        // Update existing item
+        $item = Items::find($id);
+        $item->name = $request->input('name');
+        $item->price = $request->input('price');
+        $item->stocks = $request->input('stocks');
+        $item->save();
+
+        return redirect('/items')->with('success','Item updated!');
     }
 
     /**
@@ -81,6 +110,9 @@ class ItemsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item = Items::find($id);
+        $item->delete();
+
+        return redirect('/items')->with('success','Item deleted!');
     }
 }
